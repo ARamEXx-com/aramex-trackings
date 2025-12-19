@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tracking</title>
+
+<style>
+:root{
+  --bg:#b30000;
+  --text:#fff;
+  --card:rgba(0,0,0,.25);
+}
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+.container{max-width:900px;margin:20px auto;padding:16px}
+.logo{text-align:center;font-size:32px;font-weight:900}
+
+.card{
+  background:var(--card);
+  padding:18px;
+  border-radius:12px;
+  margin-top:14px;
+}
+
+input,button{
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:none;
+  margin-top:8px;
+}
+button{
+  background:#000;
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.loader{display:none;margin-top:10px}
+.bar{height:8px;background:rgba(255,255,255,.2);border-radius:8px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:#fff;transition:1.4s}
+
+.result{display:none;margin-top:14px}
+.line{opacity:0;transform:translateY(6px);transition:.4s;margin:6px 0}
+.line.show{opacity:1;transform:none}
+
+/* Timeline */
+.timeline{margin-top:16px;border-left:3px solid #fff;padding-left:14px}
+.step{margin-bottom:12px}
+.step span{display:block;font-weight:700}
+.step small{opacity:.9}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <div class="logo">ARAMEX</div>
+
+  <div class="card">
+    <h3>Enter Tracking Code</h3>
+    <input id="code" placeholder="Enter tracking number">
+    <button onclick="track()">TRACK</button>
+
+    <div class="loader" id="loader">
+      <div class="bar"><i id="prog"></i></div>
+    </div>
+
+    <div class="result" id="result">
+      <h3>Shipment Details</h3>
+      <div id="details"></div>
+
+      <h3>Tracking Timeline</h3>
+      <div class="timeline">
+        <div class="step">
+          <span>Shipment Created</span>
+          <small>San Jose, USA</small>
+        </div>
+        <div class="step">
+          <span>In Transit</span>
+          <small>International Route</small>
+        </div>
+        <div class="step">
+          <span>Current Location</span>
+          <small>Cologne, Germany</small>
+        </div>
+        <div class="step">
+          <span>Pending Clearance</span>
+          <small>Germany</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const TRACK_CODE = "XX-UK92502";
+const AUTO_HIDE = 120000;
+
+const DATA = [
+  "<b>Status:</b> Not yet cleared",
+  "<b>Sender:</b> Seo Kyung",
+  "<b>Sender Address:</b> San Jose, California, USA",
+  "<b>Receiver:</b> Frank Muller",
+  "<b>Receiver Address:</b> Segeberger Straße 10, 24539 Neumünster, Germany",
+  "<b>Current Location:</b> Cologne, Germany",
+  "<b>Destination:</b> Germany",
+  "<b>Content:</b> Personal immunity package",
+  "<b>Weight:</b> 12.1 kg"
+];
+
+let hideTimer;
+
+function track(){
+  const input = document.getElementById("code").value.trim().toUpperCase();
+  const loader = document.getElementById("loader");
+  const prog = document.getElementById("prog");
+  const result = document.getElementById("result");
+  const details = document.getElementById("details");
+
+  result.style.display="none";
+  loader.style.display="block";
+  prog.style.width="0%";
+  setTimeout(()=>prog.style.width="100%",20);
+
+  setTimeout(()=>{
+    loader.style.display="none";
+    if(input===TRACK_CODE){
+      result.style.display="block";
+      details.innerHTML="";
+      DATA.forEach((d,i)=>{
+        setTimeout(()=>{
+          const div=document.createElement("div");
+          div.className="line";
+          div.innerHTML=d;
+          details.appendChild(div);
+          setTimeout(()=>div.classList.add("show"),20);
+        },i*180);
+      });
+
+      clearTimeout(hideTimer);
+      hideTimer=setTimeout(()=>{
+        result.style.display="none";
+      },AUTO_HIDE);
+
+    }else{
+      result.style.display="block";
+      details.innerHTML="<div class='line show'>Invalid Tracking Number</div>";
+    }
+  },1500);
+}
+</script>
+</body>
+</html>
