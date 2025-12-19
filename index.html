@@ -50,7 +50,12 @@ button{
 .line.show{opacity:1;transform:none}
 
 /* Timeline */
-.timeline{margin-top:16px;border-left:3px solid #fff;padding-left:14px}
+.timeline{
+  display:none;
+  margin-top:16px;
+  border-left:3px solid #fff;
+  padding-left:14px
+}
 .step{margin-bottom:12px}
 .step span{display:block;font-weight:700}
 .step small{opacity:.9}
@@ -74,8 +79,8 @@ button{
       <h3>Shipment Details</h3>
       <div id="details"></div>
 
-      <h3>Tracking Timeline</h3>
-      <div class="timeline">
+      <div id="timeline" class="timeline">
+        <h3>Tracking Timeline</h3>
         <div class="step">
           <span>Shipment Created</span>
           <small>San Jose, USA</small>
@@ -121,17 +126,27 @@ function track(){
   const prog = document.getElementById("prog");
   const result = document.getElementById("result");
   const details = document.getElementById("details");
+  const timeline = document.getElementById("timeline");
+
+  // If no code entered → do nothing
+  if(!input){
+    result.style.display="none";
+    return;
+  }
 
   result.style.display="none";
+  details.innerHTML="";
+  timeline.style.display="none";
+
   loader.style.display="block";
   prog.style.width="0%";
   setTimeout(()=>prog.style.width="100%",20);
 
   setTimeout(()=>{
     loader.style.display="none";
-    if(input===TRACK_CODE){
-      result.style.display="block";
-      details.innerHTML="";
+    result.style.display="block";
+
+    if(input === TRACK_CODE){
       DATA.forEach((d,i)=>{
         setTimeout(()=>{
           const div=document.createElement("div");
@@ -142,14 +157,15 @@ function track(){
         },i*180);
       });
 
-      clearTimeout(hideTimer);
-      hideTimer=setTimeout(()=>{
-        result.style.display="none";
-      },AUTO_HIDE);
+      timeline.style.display="block";
 
-    }else{
-      result.style.display="block";
-      details.innerHTML="<div class='line show'>Invalid Tracking Number</div>";
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(()=>{
+        result.style.display="none";
+      }, AUTO_HIDE);
+
+    } else {
+      details.innerHTML = "<div class='line show'>❌ Invalid Tracking Number</div>";
     }
   },1500);
 }
